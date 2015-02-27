@@ -1,0 +1,28 @@
+{
+  "connections": {
+    "asf-github": {
+      "connector": "github",
+      "owner":     "Textalk",
+      "repo":      "angular-schema-form"
+    }
+  },
+  "title": "Angular Schema Form github issues",
+  "columns": [
+    {
+      "title": "Enhancements",
+      "bind": {
+        "asf-github": {
+          "labels": ["enhancement"]
+        }
+      }
+    },
+    {
+      "title": "Bugs",
+      "bind": {
+        "asf-github": {
+          "labels": ["bug"]
+        }
+      }
+    }
+  ]
+}

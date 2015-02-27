@@ -1,0 +1,7 @@
+{
+  "title": "Apilapse github issues",
+  "bind": {
+    "conf/apilapse-github.json": {
+    }
+  }
+}

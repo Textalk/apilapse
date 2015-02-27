@@ -1,0 +1,226 @@
+html, body {
+  background-color: #CCCCCC !important;
+  padding: .4rem;
+  height: 100%;
+}
+
+.board {
+  position:     relative;
+  margin-top:   0.3rem;
+}
+
+.boardrow, .boardcolumns {
+  position: relative;
+}
+
+.boardrow > .board {
+  display: block;
+  /* width:   100%; */
+}
+
+.boardcolumns > .board {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 0.3rem;
+}
+
+.boardcolumns > .board:last-child {
+  margin-right: 0;
+}
+
+.board > h2 {
+/*  display:    block;
+  margin:     0; */
+  padding:    0.3rem;
+  background: rgba(255, 255, 255, 0.8);
+  font-size:  medium;
+}
+
+.issues {
+  margin-top:  0.3rem;
+  background:  rgba(255, 255, 255, 0.8);
+  padding:     0.3rem;
+  height:      100%;
+  min-height:  7rem;
+  min-width:   12rem;
+  /*max-width:   43.5rem;*/
+  list-style-type: none;
+}
+
+.issues .error {
+  background:    red;
+  border:        2px solid black;
+  border-radius: 1rem;
+  padding:       0.5rem;
+}
+
+.issue_size {
+  float:         right;
+  display:       inline-block;
+  border:        1px solid grey;
+  background:    yellow;
+  border-radius: 2rem;
+  padding:       0.1rem;
+  min-width:     1.7rem;
+  text-align:    center;
+}
+
+.board_size {
+  float:         right;
+  display:       inline-block;
+  border:        1px solid grey;
+  background:    yellow;
+  border-radius: 2rem;
+  padding:       0.05em 0.3em;
+  text-align:    center;
+}
+
+.as-sortable-drag {
+  height: 4rem;
+}
+.as-sortable-placeholder {
+  display:       block;
+  float:         left;
+  margin:        0;
+  background:    #888888;
+  box-shadow:    0.2rem 0.2rem 0.2rem #888888;
+}
+
+.issue {
+  position: relative;
+  display:  block;
+  float:    left;
+  width:    12rem;
+  height:   7rem;
+  padding:  0.3rem 0.7rem;
+  margin:   0;
+
+  /* Not selecting when dragging… */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.connectors {
+  position:   absolute;
+  top:        0;
+  left:       0;
+  background: white;
+  width:      1.7rem;
+}
+.connectors a {
+  display:    inline-block;
+  border:     1px solid black;
+  margin-bottom: 1px;
+  width:      1.7rem;
+  height:     1.7rem;
+}
+.connectors img {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+}
+
+.assignees {
+  position:    absolute;
+  top:         0;
+  right:       1px;
+  background:  white;
+  width:       1.7rem;
+  font-size:   50%;
+  padding:     0.1rem;
+  border:      1px solid black;
+  text-align:  center;
+}
+
+.issue p {
+  font-size: x-small;
+  margin:    0;
+}
+.issue p.prio {
+  font-size: 50%;
+  color:     grey;
+  position:  absolute;
+  bottom:    0.35rem;
+  right:     0.8rem;
+}
+
+.issue .lapp {
+  padding:    0.2rem 1.2rem 1rem 1.3rem;
+  background: wheat;
+  box-shadow: 0.2rem 0.2rem 0.2rem #888888;
+  height:     6.4rem;
+  overflow:   hidden;
+}
+
+
+
+
+
+
+/** Trying display as table **/
+.board {
+  display: table;
+  border-collapse: collapse;
+  border-spacing: 0.3rem;
+  /*border: 1px solid grey;*/
+  height:     100%;
+  width:      100%;
+}
+
+.boardheader {
+  display: table-row;
+}
+.boardheader > h2 {
+  margin:     0;
+  display:    table-cell;
+  height:     1.2rem;
+  padding:    0.3rem;
+  background: rgba(255, 255, 255, 0.8);
+  font-size:  medium;
+  text-align: center;
+  font-weight: bold;
+}
+.bind-info {
+  font-size: 70%;
+  font-weight: normal;
+}
+
+.subboard {
+  display: table-row;
+  height:  100%;
+  width:   100%;
+}
+
+.boardcolumns {
+  display: table-row;
+}
+
+.boardcolumn {
+  display:    table-cell;
+  height:     100%;
+  /*width:      100%;*/
+  padding-right: .3rem;
+}
+.boardcolumn:last-child {
+  padding-right: 0;
+}
+
+.boardrows {
+  display: table-row-group;
+}
+
+.boardrow {
+  display: table-row;
+}
+
+.boardrow > .boardcolumn {
+  padding-bottom: .6rem;
+}
+.boardrow:last-child > .boardcolumn {
+  padding-bottom: 0;
+}
