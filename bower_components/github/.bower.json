@@ -1,0 +1,12 @@
+{
+  "name": "github",
+  "homepage": "https://github.com/Textalk/github",
+  "_release": "d52df3419a",
+  "_resolution": {
+    "type": "commit",
+    "commit": "d52df3419a242b60bf811f9ea4752b1185c537aa"
+  },
+  "_source": "git://github.com/Textalk/github.git",
+  "_target": "d52df3419a242b60bf811f9ea4752b1185c537aa",
+  "_originalSource": "Textalk/github"
+}
