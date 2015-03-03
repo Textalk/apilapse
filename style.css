@@ -1,12 +1,12 @@
 html, body {
   background-color: #CCCCCC !important;
-  padding: .4rem;
+  padding: .15rem;
   height: 100%;
 }
 
 .board {
-  position:     relative;
-  margin-top:   0.3rem;
+  position:   relative;
+  margin-top: 0.3rem;
 }
 
 .boardrow, .boardcolumns {
@@ -223,4 +223,20 @@ html, body {
 }
 .boardrow:last-child > .boardcolumn {
   padding-bottom: 0;
+}
+
+.copyright {
+  background-color: #CCCCCC !important;
+  z-index: 100;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+/*  float: right;
+  clear: both;*/
+/*  border-top: 1px solid black;
+  border-left: 1px solid black;*/
+  padding: 0 0.1em;
+}
+.copyright img {
+  height: 2em;
 }

@@ -12,9 +12,11 @@ Install
 1. Clone this repo somewhere you can point your broswer with http(s).  (Browsers don't allow
 ajax-requests to your file-system, so you need http.)
 
-2. Make your own board configs in conf-dir.
+2. `bower install`
 
-3. Point your browser to index.html
+3. Make your own board configs (in conf-dir, if you like).
+
+4. Point your browser to index.html?board=<your conf-url> (e.g. conf/apilapse-board.json)
 
 
 
@@ -63,6 +65,13 @@ Example of a redmine connector:
   "prioField": 36
 }
 ```
+
+#### baseUrl
+
+baseUrl is the redmine installation, with trailing slash.
+
+
+#### prioField 
 
 prioField is the ID of a custom field of type float that is used to save priority within a board.
 If you have several boards displaying the same issue in different bindings, the priority will be

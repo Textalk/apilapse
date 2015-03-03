@@ -1,3 +1,6 @@
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0
+// @copyright ©2015 Textalk AB
+
 function RedmineIssue(connection, bind, data, $http, $q) {
   this.connection = connection
   this.$http      = $http
@@ -147,22 +150,35 @@ angular
 
             return $http.get(conf.baseUrl + projectUrl + 'issues.json', {params: params})
           })
-          .then(function(response) {
-            var issues = []
-            console.log('From redmine:', response)
+          .then(
+            function(response) {
+              var issues = []
+              console.log('From redmine:', response)
 
-            response.data.issues.forEach(function(issueData) {
-              // If bind version is null, filter out anything with a version.
-              if ('version' in bind && bind.version === null && 'fixed_version' in issueData) {
-                console.log('Version is null.  This issue should have no version.', issueData)
-                return
+              response.data.issues.forEach(function(issueData) {
+                // If bind version is null, filter out anything with a version.
+                if ('version' in bind && bind.version === null && 'fixed_version' in issueData) {
+                  console.log('Version is null.  This issue should have no version.', issueData)
+                  return
+                }
+
+                issues.push(new RedmineIssue(connection, bind, issueData, $http, $q))
+              })
+
+              deferred.resolve(issues)
+            },
+            function(error) {
+              console.log('ERROR!', error)
+              if (error.status === 401) {
+                // Unauthorized - try again with new credentials
+                connection.clearCredentials = connection.creds
+                connection.getIssues(bind)
               }
-
-              issues.push(new RedmineIssue(connection, bind, issueData, $http, $q))
-            })
-
-            deferred.resolve(issues)
-          })
+              else {
+                deferred.reject(error)
+              }
+            }
+          )
 
         return deferred.promise
       }
@@ -172,3 +188,5 @@ angular
 
     return redmine
   }])
+
+// @license-end
