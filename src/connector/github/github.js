@@ -67,7 +67,7 @@ angular
       connection.getIssues = function(bind) {
         var deferred = $q.defer()
 
-        console.log('Lodding from github as of:', bind)
+        console.log('Loading from github as of:', bind)
 
         connection.getApi().then(function(githubApi) {
           var issuesApi = githubApi.getIssues(conf.owner, conf.repo)

@@ -55,6 +55,74 @@ function RedmineIssue(connection, bind, data, $http, $q) {
       }
     }
   }
+
+  // Make a pie diagram of % done.
+  /// @todo Move this to more generic issue handling from data.doneRatio
+  if (data.done_ratio > 0 && data.done_ratio < 100) {
+    this.data.doneRatio = data.done_ratio
+    this.donePie = document.createElement('div')
+
+    var radius = 1
+    var color = d3.scale.ordinal().range(['lightgreen', 'purple'])
+
+    data = [data.done_ratio, 100 - data.done_ratio]
+
+    var vis = d3.select(this.donePie)
+        .append('svg:svg')
+        .data([data])
+        .append('svg:g')
+
+    var arc = d3.svg.arc()  // create <path> elements for arc data
+        .outerRadius(radius)
+
+    var pie = d3.layout.pie()
+        .sort(null)
+
+    var arcs = vis.selectAll('g.slice')
+        .data(pie)
+        .enter()
+        .append('svg:g')
+
+    arcs.append('svg:path')
+      .attr('fill', function(d, i) {return color(i)})
+      .attr('d', arc)
+
+    console.log(this.donePie)
+  }
+}
+
+/**
+ * Fetch subissues so they are available on this.subissues
+ *
+ * Before fetching, 'subissues' need not exist on this.  After fetching, it might be an empty
+ * array.
+ *
+ * @return A promise of the subissues (that will also be on the issue)
+ */
+RedmineIssue.prototype.fetchSubissues = function() {
+  var params   = {}
+  var issue    = this
+
+  params.key = this.connection.creds.key
+  params.include = 'children'
+
+  return this.$http
+    .get(this.connection.conf.baseUrl + 'issues/' + this.source.id + '.json', {params: params})
+    .then(function(response) {
+      issue.subissues = []
+
+      if ('children' in response.data.issue) {
+        response.data.issue.children.forEach(function(subissueData) {
+          issue.connection
+            .getIssue(subissueData.id)
+            .then(function(subissue) {
+              issue.subissues.push(subissue)
+            })
+        })
+      }
+
+      return issue.subissues
+    })
 }
 
 RedmineIssue.prototype.setPrio = function(newPrio) {
@@ -139,65 +207,87 @@ angular
         }
       ]
 
-      connection.getIssues = function(bind) {
-        var deferred = $q.defer()
+      connection.getIssue = function(id) {
+        var params = {}
+        params.key = connection.creds.key
+        return $http
+          .get(conf.baseUrl + '/issues/' + id + '.json', {params: params})
+          .then(function(response) {
+            return new RedmineIssue(connection, null, response.data.issue, $http, $q)
+          })
+      }
 
-        credentials
+      connection.getIssuesInPages = function(bind, offset, limit, issues) {
+        if (offset > 200) {throw 'Offset over 200'}
+
+        var params = {}
+        projectUrl = ''
+
+        if ('project' in bind) {projectUrl = 'projects/' + bind.project + '/'}
+        if ('status'  in bind) {params.status_id  = bind.status}
+        if ('tracker' in bind) {params.tracker_id = bind.tracker}
+        if ('version' in bind) {params.fixed_version_id = bind.version}
+        if (!('includeSubprojects' in bind) || !bind.includeSubprojects) {
+          params.subproject_id = "!*"
+        }
+
+        params.key    = connection.creds.key
+        params.offset = offset
+        params.limit  = limit
+
+        if ('prioField' in connection.conf) {
+          params.sort  = 'cf_' + connection.conf.prioField + ':desc'
+        }
+
+        return $http
+          .get(conf.baseUrl + projectUrl + 'issues.json', {params: params})
+          .then(function(response) {
+            console.log('From redmine:', response)
+
+            response.data.issues.forEach(function(issueData) {
+              // If bind version is null, filter out anything with a version.
+              if ('version' in bind && bind.version === null && 'fixed_version' in issueData) {
+                console.log('Version is null.  This issue should have no version.', issueData)
+                return
+              }
+
+              var issue = new RedmineIssue(connection, bind, issueData, $http, $q)
+              if ('subissues' in bind) {issue.fetchSubissues()}
+
+              issues.push(issue)
+            })
+
+            if (response.data.total_count > offset + limit) {
+              return connection.getIssuesInPages(bind, offset + limit, limit, issues)
+            }
+            else {
+              return issues
+            }
+          })
+      }
+
+      connection.getIssues = function(bind) {
+
+        return credentials
           .get(conf.baseUrl, schema, form, connection.clearCredentials)
           .then(function(creds) {
             console.log('Loading from redmine as of:', bind)
 
             connection.creds = creds
-
-            var params = {}
-            projectUrl = ''
-
-            if ('project' in bind) {projectUrl = 'projects/' + bind.project + '/'}
-            if ('status'  in bind) {params.status_id  = bind.status}
-            if ('tracker' in bind) {params.tracker_id = bind.tracker}
-            if ('version' in bind) {params.fixed_version_id = bind.version}
-            if (!('includeSubprojects' in bind) || !bind.includeSubprojects) {
-              params.subproject_id = "!*"
-            }
-
-            params.key = creds.key
-            params.limit = 50
-
-            params.sort = 'cf_36:desc' // TODO: Make sort code configurable
-
-            return $http.get(conf.baseUrl + projectUrl + 'issues.json', {params: params})
+            var issues = []
+            return connection.getIssuesInPages(bind, 0, 50, issues)
           })
-          .then(
-            function(response) {
-              var issues = []
-              console.log('From redmine:', response)
-
-              response.data.issues.forEach(function(issueData) {
-                // If bind version is null, filter out anything with a version.
-                if ('version' in bind && bind.version === null && 'fixed_version' in issueData) {
-                  console.log('Version is null.  This issue should have no version.', issueData)
-                  return
-                }
-
-                issues.push(new RedmineIssue(connection, bind, issueData, $http, $q))
-              })
-
-              deferred.resolve(issues)
-            },
-            function(error) {
-              console.log('ERROR!', error)
-              if (error.status === 401) {
-                // Unauthorized - try again with new credentials
-                connection.clearCredentials = connection.creds
-                connection.getIssues(bind)
-              }
-              else {
-                deferred.reject(error)
-              }
+          .catch(function(error) {
+            console.log('ERROR!', error)
+            if (error.status === 401) {
+              // Unauthorized - try again with new credentials
+              connection.clearCredentials = connection.creds
+              connection.getIssues(bind)
             }
-          )
-
-        return deferred.promise
+            else {
+              throw error
+            }
+          })
       }
 
       return connection

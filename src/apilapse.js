@@ -79,11 +79,6 @@ angular
     console.log('Location board', locationSearch)
     $scope.selectedBoard = ('board' in locationSearch ? locationSearch.board : null)
 
-    //$http.get('conf/boards.json')
-    //  .success(function(data, status, headers, config) {
-    //    $scope.boards = data
-    //  })
-
     $http.get($scope.selectedBoard)
       .success(function(data, status, headers, config) {
         if ('connections' in data) {
@@ -100,9 +95,7 @@ angular
   .directive('boardrow', function() {
     return {
       restrict:    'E',
-      scope:       {
-        board:  '=' // parent
-      },
+      scope:       {board:  '='},
       templateUrl: 'view/boardrow.html?v=3',
       replace:     true,
       link: function(scope, element, attrs) {
@@ -126,9 +119,7 @@ angular
   .directive('boardcolumns', function() {
     return {
       restrict: 'E',
-      scope: {
-        board:  '=' // parent
-      },
+      scope:    {board:  '='},
       templateUrl: 'view/boardcolumns.html?v=5',
       replace:     true,
       link: function(scope, element, attrs) {
@@ -172,6 +163,7 @@ angular
             subboard.empty().append('<boardcolumns board="board" />')
           }
           else {
+            console.log('Adding issue board', scope.board)
             subboard.empty().append('<issues board="board" />')
           }
 
@@ -185,7 +177,7 @@ angular
   .directive('issues', ['$rootScope', 'ConnectionFactory', function($rootScope, ConnectionFactory) {
     return {
       restrict:    'E',
-      templateUrl: 'view/issues.html?v=1',
+      templateUrl: 'view/issues.html?v=3',
       replace:     true,
       scope:       {
         board: '='
