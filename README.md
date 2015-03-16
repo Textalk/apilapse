@@ -12,7 +12,7 @@ Install
 1. Clone this repo somewhere you can point your broswer with http(s).  (Browsers don't allow
 ajax-requests to your file-system, so you need http.)
 
-2. `bower install`
+2. `bower install`. If you don't have bower, install it with `npm install bower` (or `sudo npm install -g bower` to install it globally in your system). If you don't have npm, install it with `apt-get install npm` or the equivallent for your system.
 
 3. Make your own board configs (in conf-dir, if you like).
 
@@ -84,4 +84,4 @@ messed up…
 License
 -------
 
-Apilapse is under the GNU Affero General Public License.  See LICENSE.
+Apilapse is under the GNU Affero General Public License.  See COPYING.
