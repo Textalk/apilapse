@@ -84,4 +84,16 @@ messed up…
 License
 -------
 
-Apilapse is under the GNU Affero General Public License.  See COPYING.
+Apilapse is under the [GNU Affero General Public
+License](http://www.gnu.org/licenses/agpl-3.0.html).  See COPYING.
+
+
+Contributing
+------------
+
+Pull requests are welcome.  Keep separate things separate.  [Keep it
+simple](http://www.infoq.com/presentations/Simple-Made-Easy).
+
+Code standard: We use [jscs](http://jscs.info/), with [Google JavaScript Style
+Guide](https://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml) as preset, but with
+a line length of 100.
