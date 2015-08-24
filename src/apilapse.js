@@ -1,6 +1,6 @@
 /**
  * Apilapse - a generic issue tracking frontend
- * Copyright (C) 2015 Textalk AB
+ * @preserve Copyright (C) 2015 Textalk AB
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -142,7 +142,7 @@ angular
       }
     }
   })
-  .directive('board', function($compile) {
+  .directive('board', ['$compile', 'ConnectionFactory', function($compile, ConnectionFactory) {
     return {
       restrict: 'E',
       scope: {
@@ -157,7 +157,45 @@ angular
           var subboard = element.find('.subboard')
 
           if (angular.isArray(scope.board.rows)) {
-            subboard.empty().append('<boardrow boards="board.rows" board="board" />')
+            subboard.empty().append('<boardrow board="board" />')
+          }
+          else if (angular.isObject(scope.board.rowBind)) {
+            scope.board.rows = []
+
+            // Half COPY!  ..fix
+            for (connectionName in scope.board.bind) {
+              ConnectionFactory.getConnection(connectionName)
+                .then(function(connection) {
+                  return connection.getIssues(scope.board.bind[connectionName])
+                })
+                .then(
+                  function(issues) {
+                    issues.forEach(function(issue) {
+                      var row    = $.extend(true, {}, scope.board.rowBind)
+                      row.title  = issue.data.title
+                      row.parent = issue
+
+                      if ('parent' in row.bind[connectionName]) {
+                        row.bind[connectionName].parent = issue.source.id
+                      }
+                      else {
+                        console.log('No parent!')
+                      }
+
+                      scope.board.rows.push(row)
+                    })
+                    //scope.calculateSize()
+                  },
+                  function(error) {
+                    console.log('Error!', error)
+                    scope.error = ('error' in scope ? scope.error + '\n' : '') + error
+                  }
+                )
+            }
+
+
+
+            subboard.empty().append('<boardrow board="board" />')
           }
           else if (angular.isArray(scope.board.columns)) {
             subboard.empty().append('<boardcolumns board="board" />')
@@ -172,7 +210,7 @@ angular
         })
       }
     }
-  })
+  }])
 
   .directive('issues', ['$rootScope', 'ConnectionFactory', function($rootScope, ConnectionFactory) {
     return {
@@ -185,7 +223,6 @@ angular
       link: function(scope, element, attrs) {
         console.log('Linked issues')
         scope.board.issues = []
-        scope.issues = scope.board.issues
 
         scope.calculateSize = function() {
           var totalSize = 0
@@ -218,6 +255,7 @@ angular
                   },
                   function(error) {
                     console.log('Error on move:', error)
+                    alert('Error on move:', error)
                   }
                 )
               console.log('Move triggered.')
@@ -239,9 +277,9 @@ angular
               // between and be done with it!
               var newPrio;
 
-              if (i > 0 && scope.board.issues[i-1].data.prio > lastPrio) {
+              if (i > 0 && scope.board.issues[i - 1].data.prio > lastPrio) {
                 scope.board.issues[i].setPrio(
-                  lastPrio + (scope.board.issues[i-1].data.prio - lastPrio) / 2
+                  lastPrio + (scope.board.issues[i - 1].data.prio - lastPrio) / 2
                 ).catch(function(error) {
                   console.log('Something went wrong in prioritizing.  Should change back?')
                 })
@@ -256,7 +294,6 @@ angular
         scope.reload = function() {
           scope.error = ''
           if (typeof scope.board.bind === 'object') {
-            scope.issues = []
 
             for (connectionName in scope.board.bind) {
               ConnectionFactory.getConnection(connectionName)
@@ -278,6 +315,15 @@ angular
         }
         scope.reload()
       }
+    }
+  }])
+
+  .directive('issue', [function() {
+    return {
+      restrict:    'E',
+      templateUrl: 'view/issue_note.html',
+      replace:     true,
+      scope:       true
     }
   }])
 

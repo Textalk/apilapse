@@ -1,0 +1,28 @@
+<div>
+  <div ng-show="issue.source.img" class="connectors">
+    <a ng-show="issue.data.url" title="{{ issue }}"
+       href="{{ issue.data.url }}" target="_self">
+      <img ng-src="{{ issue.source.img }}" />
+    </a>
+  </div>
+  <div class="issue_right_boxes">
+    <div class="assignees" ng-if="issue.data.assignee" title="{{ issue.data.assignee }}">
+      {{ issue.data.assigneeInitials }}
+    </div>
+    <div ng-if="issue.donePie" class="done_pie" title="{{ issue.data.doneRatio }}% done">
+      <svg viewBox="-1 -1 2 2" ng-bind-html="issue.donePie.innerHTML"/>
+    </div>
+  </div>
+  <div class="lapp" as-sortable-item-handle>
+    <p ng-if="issue.data.size" class="issue_size" title="Size: {{ issue.data.size }}">
+      {{ issue.data.size }}
+    </p>
+    <p title="{{ issue.data.title }}">
+      {{ issue.data.title }}
+    </p>
+
+    <p ng-if="issue.data.prio" title="Priority: {{ issue.data.prio }}" class="prio">
+      {{ issue.data.prio }}
+    </p>
+  </div>
+</div>

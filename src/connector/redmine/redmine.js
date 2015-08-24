@@ -86,8 +86,6 @@ function RedmineIssue(connection, bind, data, $http, $q) {
     arcs.append('svg:path')
       .attr('fill', function(d, i) {return color(i)})
       .attr('d', arc)
-
-    console.log(this.donePie)
   }
 }
 
@@ -179,7 +177,6 @@ RedmineIssue.prototype.move = function(newBind) {
   )
 }
 
-
 angular
   .module('apilapse')
 
@@ -218,7 +215,8 @@ angular
       }
 
       connection.getIssuesInPages = function(bind, offset, limit, issues) {
-        if (offset > 200) {throw 'Offset over 200'}
+        var maxLimit = 200
+        if (offset > maxLimit) {throw 'Offset over ' + maxLimit}
 
         var params = {}
         projectUrl = ''
@@ -239,15 +237,24 @@ angular
           params.sort  = 'cf_' + connection.conf.prioField + ':desc'
         }
 
+        console.log("Redmine params:", params, bind)
+
         return $http
           .get(conf.baseUrl + projectUrl + 'issues.json', {params: params})
           .then(function(response) {
             console.log('From redmine:', response)
 
             response.data.issues.forEach(function(issueData) {
+              if ('limit' in bind && issues.length >= bind.limit) return
+
               // If bind version is null, filter out anything with a version.
               if ('version' in bind && bind.version === null && 'fixed_version' in issueData) {
-                console.log('Version is null.  This issue should have no version.', issueData)
+                //console.log('Version is null.  This issue should have no version.', issueData)
+                return
+              }
+              if ('parent' in bind &&
+                  (!('parent' in issueData) || issueData.parent.id !== bind.parent)) {
+                //console.log('Issue doesn\'t match parent filter.', issueData, bind)
                 return
               }
 
@@ -257,7 +264,8 @@ angular
               issues.push(issue)
             })
 
-            if (response.data.total_count > offset + limit) {
+            if (response.data.total_count > offset + limit &&
+                (!('limit' in bind) || issues.length < bind.limit)) {
               return connection.getIssuesInPages(bind, offset + limit, limit, issues)
             }
             else {

@@ -1,55 +1,8 @@
 <div class="boardcolumn">
-  <div as-sortable="dragControlListeners" class="issues" ng-model="board.issues" >
+  <div as-sortable="dragControlListeners" class="issues" ng-model="board.issues">
     <div class="error" ng-if="error">{{ error }}</div>
-    <div class="issue" ng-class="{superissue: issue.subissues}"
-         as-sortable-item ng-repeat="issue in board.issues">
-      <div>
-        <div ng-show="issue.source.img" class="connectors">
-          <a ng-show="issue.data.url" title="{{ issue }}"
-             href="{{ issue.data.url }}" target="_self">
-            <img ng-src="{{ issue.source.img }}" />
-          </a>
-        </div>
-        <div class="issue_right_boxes">
-          <div class="assignees" ng-if="issue.data.assignee" title="{{ issue.data.assignee }}">
-            {{ issue.data.assigneeInitials }}
-          </div>
-          <div ng-if="issue.donePie" class="done_pie" title="{{ issue.data.doneRatio }}% done">
-            <svg viewBox="-1 -1 2 2" ng-bind-html="issue.donePie.innerHTML"/>
-          </div>
-        </div>
-        <div class="lapp">
-          <p ng-if="issue.data.size" class="issue_size" title="Size: {{ issue.data.size }}">
-            {{ issue.data.size }}
-          </p>
-          <p title="{{ issue.data.title }}" as-sortable-item-handle>
-            {{ issue.data.title }}
-          </p>
-
-          <div ng-if="issue.subissues" class="subissues"
-               as-sortable="dragControlListeners" ng-model="issue.subissues">
-            <h5>Subissues</h5>
-            <div class="issue" ng-repeat="subissue in issue.subissues" as-sortable-item>
-              <div>
-                <div class="lapp">
-                  <p ng-if="subissue.data.size" class="issue_size"
-                     title="Size: {{ subissue.data.size }}">
-                    {{ subissue.data.size }}
-                  </p>
-                  <p title="{{ issue.data.title }}"  as-sortable-item-handle>
-                    {{ subissue.data.title }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <p ng-if="issue.data.prio" title="Priority: {{ issue.data.prio }}" class="prio">
-            {{ issue.data.prio }}
-          </p>
-        </div>
-      </div>
+    <div class="issue" as-sortable-item ng-repeat="issue in board.issues">
+      <issue />
     </div>
     <div style="clear: both" />
   </div>
