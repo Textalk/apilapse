@@ -47,7 +47,7 @@ function RedmineIssue(connection, bind, data, $http, $q) {
       .map(function (s) { return s.charAt(0) + s.charAt(1) }).join(' ')
   }
 
-  // Find the version_prio (textalk specific custom field)
+  // Find the prioField, if one is configured.
   if ('prioField' in connection.conf) {
     for (var i = 0; i < data.custom_fields.length; i++) {
       if (data.custom_fields[i].id === connection.conf.prioField) {
@@ -171,7 +171,7 @@ RedmineIssue.prototype.move = function(newBind) {
   }
 
   return this.$http.put(
-    'http://redmine.textalk.com/issues/' + this.source.id + '.json?key=' +
+    this.connection.conf.baseUrl + 'issues/' + this.source.id + '.json?key=' +
       this.connection.creds.key,
     {issue:  put}
   )
