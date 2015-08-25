@@ -19,10 +19,38 @@
  *          GNU-AGPL-3.0
  */
 
+function GithubIssue(connection, bind, data, $http, $q) {
+  this.connection = connection
+  this.$http      = $http
+  this.$q         = $q
+
+  this.source = {
+    connection: connection,
+    connector:  'github',
+    img:        'src/connector/github/github.svg',
+    bound:      bind,
+    original:   data,
+    id:         data.id
+  }
+
+  this.data = {
+    title: data.title,
+    url:   data.html_url,
+    //assignee: (data.assignee ? data.assignee.login : ''),
+  }
+
+  if (data.assignee) {
+    this.data.assignee = data.assignee.login
+    this.data.assigneeInitials
+      = this.data.assignee.split(' ')
+      .map(function (s) { return s.charAt(0) + s.charAt(1) }).join(' ')
+  }
+}
+
 angular
   .module('apilapse')
 
-  .factory('github', ['ConnectionCredentials', '$q', function(credentials, $q) {
+  .factory('github', ['$http', '$q', 'ConnectionCredentials', function($http, $q, credentials) {
     var github = {}
 
     var schema = {
@@ -87,20 +115,7 @@ angular
             var issues = []
 
             githubIssues.forEach(function(issue) {
-              issues.push({
-                source: {
-                  connection: connectionName,
-                  connector:  'github',
-                  img:        'src/connector/github/github.svg',
-                  bound:      bind,
-                  original:   issue,
-                  id:         issue.id
-                },
-                data: {
-                  title: issue.title,
-                  url:   issue.html_url
-                }
-              })
+              issues.push(new GithubIssue(connection, bind, issue, $http, $q))
             })
             console.log('Github issues added.')
 
