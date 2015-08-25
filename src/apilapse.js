@@ -70,7 +70,7 @@ angular
   }])
 
   .config(function($locationProvider) {
-    $locationProvider.html5Mode({enabled: true, requireBase:false}).hashPrefix('!')
+    $locationProvider.html5Mode({enabled: true, requireBase: false}).hashPrefix('!')
   })
 
   .controller('BoardCtrl', function($scope, $http, $location, ConnectionFactory) {
@@ -92,6 +92,7 @@ angular
         console.log('No board?', data, status, headers, config)
       })
   })
+
   .directive('boardrow', function() {
     return {
       restrict:    'E',
@@ -116,6 +117,7 @@ angular
       }
     }
   })
+
   .directive('boardcolumns', function() {
     return {
       restrict: 'E',
@@ -142,6 +144,7 @@ angular
       }
     }
   })
+
   .directive('board', ['$compile', 'ConnectionFactory', function($compile, ConnectionFactory) {
     return {
       restrict: 'E',
@@ -193,19 +196,22 @@ angular
                 )
             }
 
-
-
             subboard.empty().append('<boardrow board="board" />')
           }
           else if (angular.isArray(scope.board.columns)) {
             subboard.empty().append('<boardcolumns board="board" />')
           }
-          else {
+          else if ('bind' in scope.board) {
             console.log('Adding issue board', scope.board)
             subboard.empty().append('<issues board="board" />')
           }
+          else {
+            console.log('Nothing here')
+            subboard.empty()
+          }
 
           // Re-compile after appending directive elements.
+          console.log('Recompiling board')
           $compile(element.contents())(scope)
         })
       }
