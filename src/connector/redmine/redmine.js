@@ -19,6 +19,8 @@
  *          GNU-AGPL-3.0
  */
 function RedmineIssue(connection, bind, data, $http, $q) {
+  self = this
+
   this.connection = connection
   this.$http      = $http
   this.$q         = $q
@@ -43,6 +45,33 @@ function RedmineIssue(connection, bind, data, $http, $q) {
     'tracker_' + this.source.original.tracker.id,
     'project_' + this.source.original.project.id
   ]
+
+  /// @todo Move this to a general helper and break out aggregation functions.
+  if ('aggregate' in connection.conf) {
+    angular.forEach(connection.conf.aggregate, function(aggregation, key) {
+      var fieldData = null
+
+      if ('customField' in aggregation) {
+        // Find the custom-field to aggregate.
+        for (var i = 0; i < data.custom_fields.length; i++) {
+          if (data.custom_fields[i].id === aggregation.customField) {
+            fieldData = data.custom_fields[i].value
+          }
+        }
+      }
+      else {
+        throw new Error('Unknown field type in ' + JSON.stringify(aggregation))
+      }
+
+      if (!('function' in aggregation)) {
+        throw new Error('No function in ' + JSON.stringify(aggregation))
+      }
+
+      if (fieldData && aggregation.function === 'countInCommaSeparatedList') {
+        self.data[key] = fieldData.split(',').length
+      }
+    })
+  }
 
   if ('estimated_hours' in data) this.data.size = data.estimated_hours
 

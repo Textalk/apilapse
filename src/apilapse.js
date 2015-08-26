@@ -105,9 +105,15 @@ angular
       replace:     true,
       link: function(scope, element, attrs) {
         for (var i = 0; i < scope.board.rows.length; i++) {
+          if (!('bind' in scope.board.columns[i])) {scope.board.columns[i].bind = {}}
+          if (!('conf' in scope.board.columns[i])) {scope.board.columns[i].conf = {}}
+
           // Local board bind must override the inherited bind.
           scope.board.rows[i].bind = $.extend(
             true, {}, scope.board.bind, scope.board.rows[i].bind
+          )
+          scope.board.rows[i].conf = $.extend(
+            true, {}, scope.board.conf, scope.board.rows[i].conf
           )
         }
 
@@ -131,10 +137,14 @@ angular
       link: function(scope, element, attrs) {
         for (var i = 0; i < scope.board.columns.length; i++) {
           if (!('bind' in scope.board.columns[i])) {scope.board.columns[i].bind = {}}
+          if (!('conf' in scope.board.columns[i])) {scope.board.columns[i].conf = {}}
           // Local board bind must override the inherited bind.
 
           scope.board.columns[i].bind = $.extend(
             true, {}, scope.board.bind, scope.board.columns[i].bind
+          )
+          scope.board.columns[i].conf = $.extend(
+            true, {}, scope.board.conf, scope.board.columns[i].conf
           )
         }
 
@@ -312,7 +322,13 @@ angular
                 })
                 .then(
                   function(issues) {
-                    issues.forEach(function(issue) {scope.board.issues.push(issue)})
+                    issues.forEach(function(issue) {
+                      if ('conf' in scope.board && 'bottomLeft' in scope.board.conf &&
+                          issue.data[scope.board.conf.bottomLeft]) {
+                        issue.bottomLeft = issue.data[scope.board.conf.bottomLeft]
+                      }
+                      scope.board.issues.push(issue)
+                    })
                     scope.calculateSize()
                   },
                   function(error) {

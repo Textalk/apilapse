@@ -21,6 +21,9 @@
       {{ issue.data.title }}
     </p>
 
+    <p ng-if="issue.bottomLeft" class="bottomLeft">
+      {{ issue.bottomLeft }}
+    </p>
     <p ng-if="issue.data.prio" title="Priority: {{ issue.data.prio }}" class="prio">
       {{ issue.data.prio }}
     </p>
