@@ -25,6 +25,13 @@ function RedmineIssue(connection, bind, data, $http, $q) {
   this.$http      = $http
   this.$q         = $q
 
+  data.customFields = {}
+  if ('custom_fields' in data) {
+    for (var i = 0; i < data.custom_fields.length; i++) {
+      data.customFields[data.custom_fields[i].id] = data.custom_fields[i].value
+    }
+  }
+
   this.source = {
     connection: connectionName,
     connector:  'redmine',
@@ -52,11 +59,8 @@ function RedmineIssue(connection, bind, data, $http, $q) {
       var fieldData = null
 
       if ('customField' in aggregation) {
-        // Find the custom-field to aggregate.
-        for (var i = 0; i < data.custom_fields.length; i++) {
-          if (data.custom_fields[i].id === aggregation.customField) {
-            fieldData = data.custom_fields[i].value
-          }
+        if (data.customFields[aggregation.customField]) {
+          fieldData = data.customFields[aggregation.customField]
         }
       }
       else {
@@ -84,10 +88,8 @@ function RedmineIssue(connection, bind, data, $http, $q) {
 
   // Find the prioField, if one is configured.
   if ('prioField' in connection.conf) {
-    for (var i = 0; i < data.custom_fields.length; i++) {
-      if (data.custom_fields[i].id === connection.conf.prioField) {
-        this.data.prio = parseFloat(data.custom_fields[i].value)
-      }
+    if (data.customFields[connection.conf.prioField]) {
+      this.data.prio = parseFloat(data.customFields[connection.conf.prioField])
     }
   }
 
