@@ -39,6 +39,8 @@ function GithubIssue(connection, bind, data, $http, $q) {
     //assignee: (data.assignee ? data.assignee.login : ''),
   }
 
+  this.cssClasses = ['github']
+
   if (data.assignee) {
     this.data.assignee = data.assignee.login
     this.data.assigneeInitials

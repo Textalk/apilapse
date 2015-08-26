@@ -38,6 +38,12 @@ function RedmineIssue(connection, bind, data, $http, $q) {
     prio:  0
   }
 
+  this.cssClasses = [
+    'redmine',
+    'tracker_' + this.source.original.tracker.id,
+    'project_' + this.source.original.project.id
+  ]
+
   if ('estimated_hours' in data) this.data.size = data.estimated_hours
 
   if ('assigned_to' in data) {

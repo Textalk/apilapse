@@ -58,7 +58,7 @@ Connectors
 ### Redmine
 
 Example of a redmine connector:
-```
+```javascript
 {
   "connector": "redmine",
   "baseUrl":   "http://redmine.textalk.com/",
@@ -79,6 +79,30 @@ messed up…
 
 
 ### Github
+
+Example of a github connector:
+```javascript
+{
+  "connector": "github",
+  "owner":     "Textalk",
+  "repo":      "apilapse"
+}
+```
+
+
+Styling and colour coding
+-------------------------
+
+In the top board in the definition, you can add a `css` field with a string value of a CSS URL to
+load.  All issues get classes based on their backend.  For example, a redmine issue could get
+classes `redmine tracker_1 project_3`.
+
+For the css rules to be used, you may have to specify:
+```css
+.issue .lapp.tracker_1 {
+  background-color: lightcoral
+}
+```
 
 
 License

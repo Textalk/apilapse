@@ -87,6 +87,10 @@ angular
           }
         }
         $scope.board = data
+
+        if ('css' in data) {
+          $('head').append('<link rel="stylesheet" href="' + data.css + '" />')
+        }
       })
       .error(function(data, status, headers, config) {
         console.log('No board?', data, status, headers, config)
@@ -327,7 +331,7 @@ angular
   .directive('issue', [function() {
     return {
       restrict:    'E',
-      templateUrl: 'view/issue_note.html',
+      templateUrl: 'view/issue_note.html?v=3',
       replace:     true,
       scope:       true
     }

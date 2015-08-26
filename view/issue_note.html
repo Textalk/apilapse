@@ -13,7 +13,7 @@
       <svg viewBox="-1 -1 2 2" ng-bind-html="issue.donePie.innerHTML"/>
     </div>
   </div>
-  <div class="lapp" as-sortable-item-handle>
+  <div class="lapp" ng-class="issue.cssClasses" as-sortable-item-handle>
     <p ng-if="issue.data.size" class="issue_size" title="Size: {{ issue.data.size }}">
       {{ issue.data.size }}
     </p>
