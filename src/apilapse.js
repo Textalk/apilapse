@@ -105,9 +105,6 @@ angular
       replace:     true,
       link: function(scope, element, attrs) {
         for (var i = 0; i < scope.board.rows.length; i++) {
-          if (!('bind' in scope.board.columns[i])) {scope.board.columns[i].bind = {}}
-          if (!('conf' in scope.board.columns[i])) {scope.board.columns[i].conf = {}}
-
           // Local board bind must override the inherited bind.
           scope.board.rows[i].bind = $.extend(
             true, {}, scope.board.bind, scope.board.rows[i].bind
