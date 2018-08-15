@@ -262,6 +262,9 @@ angular
         if ('status'  in bind) {params.status_id  = bind.status}
         if ('tracker' in bind) {params.tracker_id = bind.tracker}
         if ('version' in bind) {params.fixed_version_id = bind.version}
+        if ('sprintField' in connection.conf && 'sprint' in bind) {
+        	params["cf_" + connection.conf.sprintField] = bind.sprint
+    	}
         if (!('includeSubprojects' in bind) || !bind.includeSubprojects) {
           params.subproject_id = "!*"
         }
@@ -289,10 +292,24 @@ angular
                 //console.log('Version is null.  This issue should have no version.', issueData)
                 return
               }
-              if ('parent' in bind &&
-                  (!('parent' in issueData) || issueData.parent.id !== bind.parent)) {
-                //console.log('Issue doesn\'t match parent filter.', issueData, bind)
-                return
+              
+              if ('parent' in bind) {
+            	  switch (bind.parent) {
+            	  	  case '!*':
+            	  		  if ('parent' in issueData) {
+            	  			  return;
+            	  		  }
+            	  		  break;
+            	  	  case '*':
+            	  		  if (!('parent' in issueData)) {
+            	  			  return;
+            	  		  }
+            	  		  break;
+        	  		  default:
+        	  			  if (issueData.parent.id !== bind.parent) {
+        	  				  return;
+        	  			  }
+            	  }
               }
 
               var issue = new RedmineIssue(connection, bind, issueData, $http, $q)
