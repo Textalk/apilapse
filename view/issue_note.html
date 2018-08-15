@@ -21,6 +21,14 @@
       {{ issue.data.title }}
     </p>
 
+	<p class="{{issue.data.status}}" ng-if="issue.data.status !== 'Code Review'">
+     	Status: {{ issue.data.status }}
+    </p>
+
+    <p class="codeReview" ng-if="issue.data.status === 'Code Review'">
+     	Status: {{ issue.data.status }}
+    </p>
+
     <p ng-if="issue.bottomLeft" class="bottomLeft">
       {{ issue.bottomLeft }}
     </p>

@@ -104,6 +104,46 @@ html, body {
   user-select: none;
 }
 
+.New {
+	color: black;
+}
+
+.Proceed {
+	color: black;
+}
+
+.Defined {
+	color: black;
+}
+
+.Estimated {
+	color: black;
+}
+
+.Approved {
+	color: blue;
+}
+
+.codeReview {
+	color: red;
+}
+
+.Rejected {
+	color: green;
+}
+
+.Resolved {
+	color: green;
+}
+
+.Tested {
+	color: green;
+}
+
+.Closed {
+	color: green;
+}
+
 .issue.superissue {
   width: 25rem;
   height: auto;

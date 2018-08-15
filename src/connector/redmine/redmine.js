@@ -1,19 +1,18 @@
 /**
- * Apilapse - a generic issue tracking frontend
- * Copyright (C) 2015 Textalk AB
+ * Apilapse - a generic issue tracking frontend Copyright (C) 2015 Textalk AB
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt
  *          GNU-AGPL-3.0
@@ -44,6 +43,7 @@ function RedmineIssue(connection, bind, data, $http, $q) {
   this.data = {
     title: data.subject,
     url:   connection.conf.baseUrl + 'issues/' + data.id,
+    status: data.status.name,
     prio:  0
   }
 
@@ -53,7 +53,8 @@ function RedmineIssue(connection, bind, data, $http, $q) {
     'project_' + this.source.original.project.id
   ]
 
-  /// @todo Move this to a general helper and break out aggregation functions.
+  // / @todo Move this to a general helper and break out aggregation
+	// functions.
   if ('aggregate' in connection.conf) {
     angular.forEach(connection.conf.aggregate, function(aggregation, key) {
       var fieldData = null
@@ -94,7 +95,7 @@ function RedmineIssue(connection, bind, data, $http, $q) {
   }
 
   // Make a pie diagram of % done.
-  /// @todo Move this to more generic issue handling from data.doneRatio
+  // / @todo Move this to more generic issue handling from data.doneRatio
   if (data.done_ratio > 0 && data.done_ratio < 100) {
     this.data.doneRatio = data.done_ratio
     this.donePie = document.createElement('div')
@@ -129,8 +130,8 @@ function RedmineIssue(connection, bind, data, $http, $q) {
 /**
  * Fetch subissues so they are available on this.subissues
  *
- * Before fetching, 'subissues' need not exist on this.  After fetching, it might be an empty
- * array.
+ * Before fetching, 'subissues' need not exist on this. After fetching, it might
+ * be an empty array.
  *
  * @return A promise of the subissues (that will also be on the issue)
  */
@@ -262,6 +263,9 @@ angular
         if ('status'  in bind) {params.status_id  = bind.status}
         if ('tracker' in bind) {params.tracker_id = bind.tracker}
         if ('version' in bind) {params.fixed_version_id = bind.version}
+        if ('sprintField' in connection.conf && 'sprint' in bind) {
+        	params["cf_" + connection.conf.sprintField] = bind.sprint
+    	}
         if (!('includeSubprojects' in bind) || !bind.includeSubprojects) {
           params.subproject_id = "!*"
         }
@@ -286,13 +290,28 @@ angular
 
               // If bind version is null, filter out anything with a version.
               if ('version' in bind && bind.version === null && 'fixed_version' in issueData) {
-                //console.log('Version is null.  This issue should have no version.', issueData)
+                // console.log('Version is null. This issue should have no
+				// version.', issueData)
                 return
               }
-              if ('parent' in bind &&
-                  (!('parent' in issueData) || issueData.parent.id !== bind.parent)) {
-                //console.log('Issue doesn\'t match parent filter.', issueData, bind)
-                return
+
+              if ('parent' in bind) {
+            	  switch (bind.parent) {
+            	  	  case '!*':
+            	  		  if ('parent' in issueData) {
+            	  			  return;
+            	  		  }
+            	  		  break;
+            	  	  case '*':
+            	  		  if (!('parent' in issueData)) {
+            	  			  return;
+            	  		  }
+            	  		  break;
+        	  		  default:
+        	  			  if (issueData.parent.id !== bind.parent) {
+        	  				  return;
+        	  			  }
+            	  }
               }
 
               var issue = new RedmineIssue(connection, bind, issueData, $http, $q)
